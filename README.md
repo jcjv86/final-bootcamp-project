@@ -21,6 +21,8 @@ Deep learning model uses Tensorflow Keras and is built on top of the [VGG16](htt
 This app takes a jpg file of a brain MRI scan and checks if there is a tumor of the above mentioned types.
 
 
+*Model can be downloaded through the following [link](https://drive.google.com/file/d/1mzG5dKQbQ-nyjaUutQoTvTHQUYbiQRje/view?usp=sharing) as I had some issues with GitHub lfs.*
+
 ## Program developed for studying purposes, not to be used for any other reason!
 
 ## Please *ALWAYS* check with a doctor.
