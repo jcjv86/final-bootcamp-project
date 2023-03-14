@@ -1,0 +1,2 @@
+models/model.model filter=lfs diff=lfs merge=lfs -text
+models/final_model_weights.h5 filter=lfs diff=lfs merge=lfs -text
