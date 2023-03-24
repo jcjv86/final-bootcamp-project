@@ -47,7 +47,7 @@ python -m ipykernel install --user --name=venv
 6- Create dataset by running data_fetch.py (requires internet connection):
 python data_fetch.py
 
-7- Download CNN Deep Learning models into the models folder by running get_models.py(requires internet connection, download size around 400 Mb):
+7- Download CNN Deep Learning models into the models folder by running get_models.py (requires internet connection, download size around 400 Mb): <br>
 python get_models.py
 
 7 - Move into the app folder:
