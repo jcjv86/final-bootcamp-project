@@ -25,6 +25,7 @@ Confusion matrix of the BTS model
 Confusion matrix of the TRL model
 ![Alt text](src/pics/confusion_matrix_trl.png?raw=true "Title")
 
+New models generation can be done via models notebook. You can run the data creation cell inside to download and extract the dataset.
 
 ## Installation guide:
 
@@ -45,7 +46,7 @@ pip install -m requirements-dev.txt
 python -m ipykernel install --user --name=venv
 
 6- Create dataset and models by running build.py (requires internet connection, around 600 mb download in total): <br>
-python data_fetch.py
+python build.py
 
 7- Run app: <br>
 streamlit run bts.py
