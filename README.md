@@ -44,8 +44,11 @@ pip install -m requirements-dev.txt
 5- Configure user:
 python -m ipykernel install --user --name=venv
 
-6- Download Deep Learning models into the models folder by running getmodels.py:
-python getmodels.py
+6- Create dataset by running data_fetch.py (requires internet connection):
+python data_fetch.py
+
+7- Download CNN Deep Learning models into the models folder by running get_models.py(requires internet connection, download size around 400 Mb):
+python get_models.py
 
 7 - Move into the app folder:
 cd app
@@ -56,9 +59,6 @@ streamlit run bts.py
 
 This app takes a jpg file of a brain MRI scan and checks if there is a tumor of the above mentioned types.
 
-
-**Model can be downloaded through the following [link](https://drive.google.com/file/d/1mzG5dKQbQ-nyjaUutQoTvTHQUYbiQRje/view?usp=sharing) as I had some issues with GitHub lfs.**
-Make sure to extract it into the **models** folder
 
 ## Program developed for studying purposes, not to be used for any other reason!
 
