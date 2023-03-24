@@ -9,7 +9,7 @@ try:
 except:
     print('Error - folders not created. Dataset or folders already present. Delete them and run script again.')
 
-print('Getting dataset and extracting it, please wait...\n')
+print('\nGetting dataset and extracting it, please wait...\n')
 url = 'https://drive.google.com/uc?id=131ospwav2g6KKmG8q3iC1vf4mYk60y9O'
 output = './data/brain_tumor_dataset.zip'
 unzip = './data'
@@ -23,7 +23,7 @@ try:
 except:
     print('Error - folders not created. Dataset or folders already present. Delete them and run script again.')
 
-print('Getting models and extracting them, please wait...\n')
+print('\n\nGetting models and extracting them, please wait...\n')
 url = 'https://drive.google.com/uc?id=13Q8_TId7jObbt3LtZeQMKQgvnaBvZ6Hg'
 output = './models/bts_model.zip'
 unzip = './models'
