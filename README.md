@@ -28,32 +28,32 @@ Confusion matrix of the TRL model
 
 ## Installation guide:
 
-1- Clone repo into desired folder:
+1- Clone repo into desired folder: <br>
 git clone https://github.com/jcjv86/final-bootcamp-project
 
-2- Create venv environment inside the cloned repo folder:
+2- Create venv environment inside the cloned repo folder: <br>
 python -m venv ./venv
 
-3- Activate environment:
+3- Activate environment: <br>
 source ./venv/bin/activate
 
-4- Install required libraries:
-pip install -m requirements.txt
+4- Install required libraries: <br>
+pip install -m requirements.txt <br>
 pip install -m requirements-dev.txt
 
-5- Configure user:
+5- Configure user: <br>
 python -m ipykernel install --user --name=venv
 
-6- Create dataset by running data_fetch.py (requires internet connection):
+6- Create dataset by running data_fetch.py (requires internet connection): <br>
 python data_fetch.py
 
 7- Download CNN Deep Learning models into the models folder by running get_models.py (requires internet connection, download size around 400 Mb): <br>
 python get_models.py
 
-7 - Move into the app folder:
+7 - Move into the app folder: <br>
 cd app
 
-8 - Run app:
+8 - Run app: <br>
 streamlit run bts.py
 
 
