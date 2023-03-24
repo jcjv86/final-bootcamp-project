@@ -15,7 +15,7 @@ The following project takes care of identifying if in a given picture there is a
 - Pituitary: Pituitary tumors are unusual growths that develop in the pituitary gland and account from 10% to 25% of all intracranial neoplasms. <br>This gland is an organ about the size of a pea that is located behind the nose at the base of the brain. Some of these tumors cause the pituitary gland to make too much of certain hormones that control important body functions, while others can cause the gland to make too little. Most pituitary tumors are benign and can be treated with surgery, medications or radiation therapy.
 
 
-I have used 2 different sequential models: one created from scratch called BTS and another created with transfer learning of model [VGG16](https://keras.io/api/applications/vgg/), called TRL.
+I have used 2 different sequential models: one created from scratch called BTS and another created with transfer learning from model [VGG16](https://keras.io/api/applications/vgg/), called TRL.
 
 They have a similar performance, but the TRL model performs better in a critical diagnosis: no false negatives when identifying tumors (but possible false positives between the different tumor types).
 
@@ -44,16 +44,10 @@ pip install -m requirements-dev.txt
 5- Configure user: <br>
 python -m ipykernel install --user --name=venv
 
-6- Create dataset by running data_fetch.py (requires internet connection): <br>
+6- Create dataset and models by running build.py (requires internet connection, around 600 mb download in total): <br>
 python data_fetch.py
 
-7- Download CNN Deep Learning models into the models folder by running get_models.py (requires internet connection, download size around 400 Mb): <br>
-python get_models.py
-
-7 - Move into the app folder: <br>
-cd app
-
-8 - Run app: <br>
+7- Run app: <br>
 streamlit run bts.py
 
 
@@ -62,7 +56,7 @@ This app takes a jpg file of a brain MRI scan and checks if there is a tumor of 
 
 ## Program developed for studying purposes, not to be used for any other reason!
 
-## Please *ALWAYS* check with a doctor.
+## Please **ALWAYS** check with a doctor.
 
 
 ### More resources:
