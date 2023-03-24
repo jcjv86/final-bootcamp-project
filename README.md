@@ -25,7 +25,9 @@ Confusion matrix of the BTS model
 Confusion matrix of the TRL model
 ![Alt text](src/pics/confusion_matrix_trl.png?raw=true "Title")
 
-New models generation can be done via models notebook. You can run the data creation cell inside to download and extract the dataset.
+New models can be generated via models notebook. You can run the data creation cell inside to download and extract the dataset and work from there.
+
+Alternatively, if you just want to use the app with the already trained models, follow the steps below.
 
 ## Installation guide:
 
