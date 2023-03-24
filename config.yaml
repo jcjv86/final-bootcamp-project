@@ -1,7 +1,5 @@
 lib : '../src/lib/'
 pics: '../src/pics/'
-data: 
-  raw: '../data/raw/'
-  clean: '../data/clean/'
+data: '../data/'
 models: '../models/'
 scalers: '../scalers/'
