@@ -1,9 +1,24 @@
 import os
 import sys
 import shutil
+import subprocess
+
+#Install required libraries
+print('Installing required libraries, please wait')
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'])
+
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
+
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements-dev.txt'])
+
+#Configure user in venv
+subprocess.check_call([sys.executable, '-m', 'ipykernel', 'install', '--user', '--name=venv'])
+print('venv user configured')
+
+#Import gdown to download data and models
 import gdown
 
-
+#Download and unpack dataset
 try:
     os.mkdir('./data')
 except:
@@ -18,6 +33,7 @@ shutil.unpack_archive(output, unzip)
 os.remove(output)
 print('Dataset successfully created!')
 
+#Download and unpack models
 try:
     os.mkdir('./models')
 except:
