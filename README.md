@@ -35,22 +35,15 @@ Alternatively, if you just want to use the app with the already trained models, 
 git clone https://github.com/jcjv86/final-bootcamp-project
 
 2- Create venv environment inside the cloned repo folder: <br>
-python -m venv ./venv
+python3 -m venv ./venv
 
 3- Activate environment: <br>
 source ./venv/bin/activate
 
-4- Install required libraries: <br>
-pip install -m requirements.txt <br>
-pip install -m requirements-dev.txt
-
-5- Configure user: <br>
-python -m ipykernel install --user --name=venv
-
-6- Create dataset and models by running build.py (requires internet connection, around 600 mb download in total): <br>
+4- Run build.py to install required libraries, configure venv user and download and unpack the dataset and models (around 1GB download in total): <br>
 python build.py
 
-7- Run app: <br>
+6- Run app: <br>
 streamlit run bts.py
 
 
