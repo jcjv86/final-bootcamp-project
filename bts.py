@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import os
 import yaml
+import pickle
 from PIL import Image
 import tensorflow as tf
 from tensorflow import keras
@@ -17,24 +18,23 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.utils import plot_model
 
+with open('./src/lib/pred_dict.pickle', 'rb') as handle:
+    pred_dict = pickle.load(handle)
+
 bts = tf.keras.models.load_model('./models/bts.model')
 trl = tf.keras.models.load_model('./models/trl.model')
 
-st.header('Brain Tumor Scanner')
 
 with st.sidebar:
     st.image('./src/pics/samples/logo.png', width=300)
     st.subheader('*A deep learning application*')
     st.write('''
-        ###### *by Juan Jimenez*
-This program will check if on a given jpg file of a brain MRI scan there is a tumor.
+        ##### *by Juan Jimenez*
+This program uses a Deep Learning CNN model to check if on a given jpg file of a brain MRI scan there is a tumor.
 
-We trained our models with pictures of 3 different types of tumors and pictures of a healthy brain.
+We trained our 2 models with pictures of 3 different types of tumors and pictures of a healthy brain.
 
 ''')
-
-    st.write('''This Deep Learning model is able to identify with a very high accuracy if there is a tumor or not.''')
-
     st.write('''Specific types of tumor however may be confused among each other,
                 specially when they are located in limiting regions or the profile of the picture is confusing or the tumor has not enough contrast.''')
     st.header(''':red[Program developed for studying purposes, not to be used for any other reason!]''')
@@ -68,32 +68,49 @@ We trained our models with pictures of 3 different types of tumors and pictures 
             st.write('In addition to this, any alteration in the gland can lead to a increased or reduced hormone release rate, impacting the normal functioning of the body')
             st.write('More info: [Pituitary tumors at Cancer.org](https://www.cancer.org/cancer/pituitary-tumors/about/what-is-pituitary-tumor.html)')
 
+    with st.expander('Cancer Associations'):
+        st.write('[Asociación Española Contra el Cáncer](https://www.contraelcancer.es/es)')
+        st.write('[European Association for Cancer Research](https://www.eacr.org/)')
+        st.write('[American Cancer Society](https://cancer.org)')
+        st.write('[American Association for Cancer Research](https://www.aacr.org/)')
+        st.write('')
+
+    with st.expander('Learning resources'):
+        st.write('[Keras](https://keras.io/)')
+        st.write('[Google ML Education](https://developers.google.com/machine-learning)')
+        st.write('[Brain Anatomy in detail](https://www.physio-pedia.com/Brain_Anatomy)')
+
+
+
+
+
 
 model_load = st.radio(
-    "Please select model to be used for the image prediction",
+    ":red[**Please select model to be used for the image prediction**]",
     ('BTS', 'TRL'))
 
 
 if model_load == 'BTS':
-    st.write('You selected BTS model.')
+    st.write(':red[You selected BTS model.]')
     model = bts
 else:
-    st.write('You selected TRL model.')
+    st.write(':red[You selected TRL model.]')
     model = trl
 
-
-image = st.file_uploader('Please upload a .jpg file', type='jpg')
+image = st.file_uploader(':red[Please upload a .jpg file]', type='jpg')
 #import uploader as uploader
+
+
 
 def conclusion(number):
     if number==0:
-        return 'Tumor - Glioma'
-    elif number ==3:
-        return 'Tumor - Meningioma'
-    elif number == 1:
-        return 'Not a tumor'
+        return pred_dict[0]
+    elif number ==1:
+        return pred_dict[1]
     elif number == 2:
-        return 'Tumor - pituitary'
+        return pred_dict[2]
+    elif number == 3:
+        return pred_dict[3]
     else:
         return 'Sorry, not clear'
 
