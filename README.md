@@ -43,7 +43,7 @@ source ./venv/bin/activate
 4- Run setup.py to install required libraries, configure venv user and download and unpack the dataset and models (around 1GB download in total): <br>
 python setup.py
 
-6- Run app: <br>
+5- Run app: <br>
 streamlit run bts.py
 
 This app takes a jpg file of a brain MRI scan and checks if there is a tumor of the above mentioned types.
