@@ -5,7 +5,8 @@ import sys
 import os
 import yaml
 import pickle
-from PIL import Image
+import random
+from PIL import Image, ImageEnhance
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
@@ -98,14 +99,19 @@ else:
     model = trl
 
 image = st.file_uploader(':red[Please upload a .jpg file]', type='jpg')
-#import uploader as uploader
 
+def image_prep(image):
+    img = Image.open(image)
+    img = Image.fromarray(np.uint8(img))
+    img = ImageEnhance.Brightness(img).enhance(1)
+    img = ImageEnhance.Contrast(img).enhance(1)
+    return img
 
 
 def conclusion(number):
-    if number==0:
+    if number == 0:
         return pred_dict[0]
-    elif number ==1:
+    elif number == 1:
         return pred_dict[1]
     elif number == 2:
         return pred_dict[2]
@@ -115,12 +121,34 @@ def conclusion(number):
         return 'Sorry, not clear'
 
 if image:
-    img = Image.open(image)
+    img = image_prep(image)
     x = np.array(img.resize((128,128)))
     x = x.reshape(1,128,128,3)
+    x = np.array(x)/255.0
     res = model.predict_on_batch(x)
     classification = np.where(res == np.amax(res))[1][0]
     diagnose = (conclusion(classification))
-    image = img.resize((500,500))
-    st.image(image)
-    st.header(diagnose)
+    if classification == 1:
+        if model == bts:
+            st.write('BTS model has concluded that there is no tumor.')
+            st.write('Using TRL model to make sure it is not a false negative, as this model performs better in these cases.')
+            res = trl.predict_on_batch(x)
+            classification = np.where(res == np.amax(res))[1][0]
+            if classification == 1:
+                diagnose = (conclusion(classification))
+                image = img.resize((500,500))
+                st.header('TRL model has confirmed the diagnosis:')
+                st.header('No tumor detected')
+                st.image(image)
+            else:
+                diagnose = (conclusion(classification))
+                image = img.resize((500,500))
+                st.header('TLR model has concluded:'+diagnose)
+                st.header(diagnose)
+                st.header('Please consult a doctor as there is no clear conclusion.')
+                st.image(image)
+
+    else:
+        image = img.resize((500,500))
+        st.header(diagnose)
+        st.image(image)
