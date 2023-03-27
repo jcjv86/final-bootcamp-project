@@ -11,6 +11,9 @@ subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requiremen
 
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements-dev.txt'])
 
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'jupyter-lab'])
+print('Jupyter Lab installed')
+
 #Configure user in venv
 subprocess.check_call([sys.executable, '-m', 'ipykernel', 'install', '--user', '--name=venv'])
 print('venv user configured')
