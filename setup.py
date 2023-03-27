@@ -11,6 +11,7 @@ subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requiremen
 
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements-dev.txt'])
 
+#Jupyter lab added here as I couldn't include it on the requirements file due to issues with jupyter.
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'jupyterlab'])
 print('Jupyter Lab installed')
 
@@ -22,10 +23,7 @@ print('venv user configured')
 import gdown
 
 #Download and unpack dataset
-try:
-    os.mkdir('./data')
-except:
-    print('Error - folders not created. Dataset or folders already present. Delete them and run script again.')
+os.mkdir('./data')
 
 print('\nGetting dataset and extracting it, please wait...\n')
 url = 'https://drive.google.com/uc?id=131ospwav2g6KKmG8q3iC1vf4mYk60y9O'
@@ -37,10 +35,7 @@ os.remove(output)
 print('Dataset successfully created!')
 
 #Download and unpack models
-try:
-    os.mkdir('./models')
-except:
-    print('Error - folders not created. Dataset or folders already present. Delete them and run script again.')
+os.mkdir('./models')
 
 print('\n\nGetting models and extracting them, please wait...\n')
 url = 'https://drive.google.com/uc?id=13Q8_TId7jObbt3LtZeQMKQgvnaBvZ6Hg'
