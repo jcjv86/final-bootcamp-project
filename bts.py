@@ -18,6 +18,9 @@ from tensorflow.keras.applications import *
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.utils import plot_model
+import smtplib
+import ssl
+from email.message import EmailMessage
 
 with open('./src/lib/pred_dict.pickle', 'rb') as handle:
     pred_dict = pickle.load(handle)
@@ -95,7 +98,7 @@ else:
     st.write(':red[You selected TRL model.]')
     model = trl
 
-image = st.file_uploader(':red[Please upload a .jpg file]', type='jpg')
+image= st.file_uploader(':red[Please upload a .jpg file]', type='jpg')
 
 def image_prep(image):
     img = Image.open(image)
@@ -105,6 +108,13 @@ def image_prep(image):
     return img
 
 if image:
+    #Configure email sender
+    email_sender = 'bts.notificator@gmail.com'
+    email_password = 'ozztliivjctnfgpu'
+    email_receiver = 'br4inspecialist@gmail.com'
+    subject = 'Brain MRI scan revision needed'
+    pic_name = image.name
+    #Image loader and predictions
     img = image_prep(image)
     x = np.array(img.resize((128,128)))
     x = x.reshape(1,128,128,3)
@@ -132,9 +142,23 @@ if image:
             else:
                 st.subheader('New confidence level: {:.3f}%.'.format((100 * score2)))
                 st.subheader(pred_dict[np.argmax(lbl2)])
-                st.subheader(':red[You may want to consult a doctor as the secondary diagnostic has not reached a 99.90% confidence level.]')
+                greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
+                conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}'.format((100 * score), (100 * score2)))
+                goodbye = '\n\nKind regards,\nBTS crew'
+                body = greet+pic_name+conf_lvl+goodbye
+                em = EmailMessage()
+                em['From'] = email_sender
+                em['To'] = email_receiver
+                em['Subject'] = subject
+                em.set_content(body)
+                context = ssl.create_default_context()
+                st.subheader(':red[Secondary diagnostic confidence level lower than 99.90%.]')
+                st.subheader(':red[Email sent to a Brain Specialist for further review]')
                 image = img.resize((300,300))
                 st.image(image)
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+                    smtp.login(email_sender, email_password)
+                    smtp.sendmail(email_sender, email_receiver, em.as_string())
         if model == trl:
             st.header('{}.\n Confidence level: {:.4f}%. Model used: TRL'.format(pred_dict[np.argmax(lbl)], (100 * score)))
             st.subheader(':red[Running secondary diagnostic with BTS model...]')
@@ -150,6 +174,20 @@ if image:
             else:
                 st.subheader('New confidence level: {:.3f}%.'.format((100 * score2)))
                 st.subheader(pred_dict[np.argmax(lbl2)])
-                st.subheader(':red[You may want to consult a doctor as the secondary diagnostic has not reached a 99.90% confidence level.]')
+                greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
+                conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}'.format((100 * score), (100 * score2)))
+                goodbye = '\n\nKind regards,\nBTS crew'
+                body = greet+pic_name+conf_lvl+goodbye
+                em = EmailMessage()
+                em['From'] = email_sender
+                em['To'] = email_receiver
+                em['Subject'] = subject
+                em.set_content(body)
+                context = ssl.create_default_context()
+                st.subheader(':red[Secondary diagnostic confidence level lower than 99.90%.]')
+                st.subheader(':red[Email sent to a Brain Specialist for further review]')
                 image = img.resize((300,300))
                 st.image(image)
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+                    smtp.login(email_sender, email_password)
+                    smtp.sendmail(email_sender, email_receiver, em.as_string())
