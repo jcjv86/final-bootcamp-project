@@ -109,9 +109,9 @@ def image_prep(image):
 
 if image:
     #Configure email sender
-    email_sender = 'bts.notificator@gmail.com'
-    email_password = 'ozztliivjctnfgpu'
-    email_receiver = 'br4inspecialist@gmail.com'
+    email_sender = '@gmail.com'
+    email_password = ''
+    email_receiver = '@gmail.com'
     subject = 'Brain MRI scan revision needed'
     pic_name = image.name
     #Image loader and predictions
@@ -142,8 +142,12 @@ if image:
             else:
                 st.subheader('New confidence level: {:.3f}%.'.format((100 * score2)))
                 st.subheader(pred_dict[np.argmax(lbl2)])
+                st.subheader(':red[Secondary diagnostic confidence level lower than 99.90%.]')
+                st.subheader(':red[Email sent to a Brain Specialist for further review]')
+                image = img.resize((300,300))
+                st.image(image)
                 greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
-                conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}'.format((100 * score), (100 * score2)))
+                conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}%'.format((100 * score), (100 * score2)))
                 goodbye = '\n\nKind regards,\nBTS crew'
                 body = greet+pic_name+conf_lvl+goodbye
                 em = EmailMessage()
@@ -152,10 +156,6 @@ if image:
                 em['Subject'] = subject
                 em.set_content(body)
                 context = ssl.create_default_context()
-                st.subheader(':red[Secondary diagnostic confidence level lower than 99.90%.]')
-                st.subheader(':red[Email sent to a Brain Specialist for further review]')
-                image = img.resize((300,300))
-                st.image(image)
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
                     smtp.login(email_sender, email_password)
                     smtp.sendmail(email_sender, email_receiver, em.as_string())
@@ -174,8 +174,12 @@ if image:
             else:
                 st.subheader('New confidence level: {:.3f}%.'.format((100 * score2)))
                 st.subheader(pred_dict[np.argmax(lbl2)])
+                st.subheader(':red[Secondary diagnostic confidence level lower than 99.90%.]')
+                st.subheader(':red[Email sent to a Brain Specialist for further review]')
+                image = img.resize((300,300))
+                st.image(image)
                 greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
-                conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}'.format((100 * score), (100 * score2)))
+                conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}%'.format((100 * score), (100 * score2)))
                 goodbye = '\n\nKind regards,\nBTS crew'
                 body = greet+pic_name+conf_lvl+goodbye
                 em = EmailMessage()
@@ -184,10 +188,6 @@ if image:
                 em['Subject'] = subject
                 em.set_content(body)
                 context = ssl.create_default_context()
-                st.subheader(':red[Secondary diagnostic confidence level lower than 99.90%.]')
-                st.subheader(':red[Email sent to a Brain Specialist for further review]')
-                image = img.resize((300,300))
-                st.image(image)
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
                     smtp.login(email_sender, email_password)
                     smtp.sendmail(email_sender, email_receiver, em.as_string())
