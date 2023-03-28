@@ -25,19 +25,16 @@ with open('./src/lib/pred_dict.pickle', 'rb') as handle:
 bts = tf.keras.models.load_model('./models/bts.model')
 trl = tf.keras.models.load_model('./models/trl.model')
 
+bts._name = 'BTS'
+trl._name = 'TRL'
 
 with st.sidebar:
     st.image('./src/pics/samples/logo.png', width=300)
-    st.subheader('*A deep learning application*')
-    st.write('''
-        ##### *by Juan Jimenez*
-This program uses a Deep Learning CNN model to check if on a given jpg file of a brain MRI scan there is a tumor.
-
-We trained our 2 models with pictures of 3 different types of tumors and pictures of a healthy brain.
-
-''')
-    st.write('''Specific types of tumor however may be confused among each other,
-                specially when they are located in limiting regions or the profile of the picture is confusing or the tumor has not enough contrast.''')
+    st.subheader('*A deep learning application for healthcare support*')
+    st.write('''##### *by Juan Jimenez*''')
+    st.write('This program uses 2 different machine learning models to check if on a MRI brain scan picture there is a tumor growth.')
+    st.write('''If the model doesn't arrive to a 99.90% confidence level it will recommend to see a doctor.''')
+    st.write('Future implementations could flag the result and send it automatically to a doctor for further review.')
     st.header(''':red[Program developed for studying purposes, not to be used for any other reason!]''')
 
     st.header(''':red[Please ALWAYS check with a doctor]''')
@@ -107,48 +104,52 @@ def image_prep(image):
     img = ImageEnhance.Contrast(img).enhance(1)
     return img
 
-
-def conclusion(number):
-    if number == 0:
-        return pred_dict[0]
-    elif number == 1:
-        return pred_dict[1]
-    elif number == 2:
-        return pred_dict[2]
-    elif number == 3:
-        return pred_dict[3]
-    else:
-        return 'Sorry, not clear'
-
 if image:
     img = image_prep(image)
     x = np.array(img.resize((128,128)))
     x = x.reshape(1,128,128,3)
     x = np.array(x)/255.0
     res = model.predict_on_batch(x)
-    classification = np.where(res == np.amax(res))[1][0]
-    diagnose = (conclusion(classification))
-    if classification == 1:
+    score = max(res[0])
+    lbl = tf.nn.softmax(res[0])
+    if score >= 0.999:
+        st.header('{}.\n Confidence level: {:.2f}%. Model used: {}'.format(pred_dict[np.argmax(lbl)], (100 * score), model.name))
+        image = img.resize((500,500))
+        st.image(image)
+    elif score < 0.999:
         if model == bts:
-            st.write('BTS model has concluded that there is no tumor.')
-            st.write('Using TRL model to make sure it is not a false negative, as this model performs better in these cases.')
-            res = trl.predict_on_batch(x)
-            classification = np.where(res == np.amax(res))[1][0]
-            if classification == 1:
-                diagnose = (conclusion(classification))
-                image = img.resize((500,500))
-                st.header('TRL model has confirmed the diagnosis:')
-                st.header('No tumor detected')
+            st.header('{}.\n Confidence level: {:.4f}%. Model used: BTS'.format(pred_dict[np.argmax(lbl)], (100 * score)))
+            st.subheader(':red[Running secondary diagnostic with TRL model...]')
+            res2 = trl.predict_on_batch(x)
+            score2 = max(res2[0])
+            lbl2 = tf.nn.softmax(res2[0])
+            if score2 >= 0.999:
+                st.subheader(':red[Diagnostic confirmed.]')
+                st.subheader(pred_dict[np.argmax(lbl2)])
+                st.subheader('New confidence level: {:.2f}%.'.format((100 * score2)))
+                image = img.resize((300,300))
                 st.image(image)
             else:
-                diagnose = (conclusion(classification))
-                image = img.resize((500,500))
-                st.header('TLR model has concluded:'+diagnose)
-                st.header(diagnose)
-                st.header('Please consult a doctor as there is no clear conclusion.')
+                st.subheader('New confidence level: {:.3f}%.'.format((100 * score2)))
+                st.subheader(pred_dict[np.argmax(lbl2)])
+                st.subheader(':red[You may want to consult a doctor as the secondary diagnostic has not reached a 99.90% confidence level.]')
+                image = img.resize((300,300))
                 st.image(image)
-
-    else:
-        image = img.resize((500,500))
-        st.header(diagnose)
-        st.image(image)
+        if model == trl:
+            st.header('{}.\n Confidence level: {:.4f}%. Model used: TRL'.format(pred_dict[np.argmax(lbl)], (100 * score)))
+            st.subheader(':red[Running secondary diagnostic with BTS model...]')
+            res2 = bts.predict_on_batch(x)
+            score2 = max(res2[0])
+            lbl2 = tf.nn.softmax(res2[0])
+            if score2 >= 0.999:
+                st.subheader(':red[Diagnostic confirmed.]')
+                st.subheader(pred_dict[np.argmax(lbl2)])
+                st.subheader('New confidence level: {:.2f}%.'.format((100 * score2)))
+                image = img.resize((300,300))
+                st.image(image)
+            else:
+                st.subheader('New confidence level: {:.3f}%.'.format((100 * score2)))
+                st.subheader(pred_dict[np.argmax(lbl2)])
+                st.subheader(':red[You may want to consult a doctor as the secondary diagnostic has not reached a 99.90% confidence level.]')
+                image = img.resize((300,300))
+                st.image(image)
