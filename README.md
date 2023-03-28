@@ -6,7 +6,10 @@
 
 A tumor growth in an enclosed environment such as the cranium can be very problematic due to the limited space available inside, which normally causes an increase in the internal cranial pressure. Whether they are beningn or malign, they can cause serious health issues.
 
-The following project takes care of identifying if in a given brain MRI scan picture there is a tumor growth using 2 Deep Learning CNN models. These were trained using MRI brain scans of the following types of central nervous system tumors:
+The following project takes care of identifying if in a given brain MRI scan picture there is a tumor growth using 2 Deep Learning CNN models. If a model doesn't achieve a 99.90% confidence, runs a secondary diagnostic with the other model, and if this doesn't arrive to a 99.90% confidence either, an specialist is contacted automatically via email.
+
+
+The models were trained using MRI brain scans of the following types of central nervous system tumors:
 
 - Meningioma: Overall, they are rarely malign. However, since they can grow slowly until they are very large they can be severely disabling and life-threatening. <br> Meningiomas origin on the meninges, the membranous layers surrounding the brain and spinal cord. Many cases never produce symptoms, although when they do, these include seizures, dementia, trouble talking, vision problems, one sided weakness, or loss of bladder control. When removed via surgery, less that a 20% recur.
 
@@ -48,6 +51,33 @@ streamlit run bts.py
 
 This app takes a jpg file of a brain MRI scan and checks if there is a tumor of the above mentioned types.
 
+
+## App in action
+
+1- BTS model 100% confidence
+![Alt text](src/pics/samples/app1.png?raw=true "Title")
+
+2- TRL model 100% confidence
+![Alt text](src/pics/samples/app2.png?raw=true "Title")
+
+3- BTS model confidence low - secondary diagnostic run by TRL model
+![Alt text](src/pics/samples/app3.png?raw=true "Title")
+
+4- TRL model confidence low - secondary diagnostic run by BTS model
+![Alt text](src/pics/samples/app4.png?raw=true "Title")
+
+5.1- Secondary diagnostic failed to achieve a 99.90% confidence: Specialist contacted via email
+![Alt text](src/pics/samples/app5.png?raw=true "Title")
+
+5.2- Email notification sent by BTS program
+![Alt text](src/pics/samples/app_mail.png?raw=true "Title")
+
+
+## Instructions for the email setup:
+
+Look for line 111, from there you can set the email account that will send the notification via smtp (currently configured for gmail), the password (recommended to set an app password) and the email account that will receive the notification. <br>
+
+If you use a different server than gmail you would have to configure the smtp servers in lines 159 and 191.
 
 ## Program developed for studying purposes, not to be used for any other reason!
 
