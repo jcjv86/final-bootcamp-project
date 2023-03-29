@@ -22,15 +22,23 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
+#Load prediction dictionary (class labels)
 with open('./src/lib/pred_dict.pickle', 'rb') as handle:
     pred_dict = pickle.load(handle)
 
+#Load and rename models
 bts = tf.keras.models.load_model('./models/bts.model')
 trl = tf.keras.models.load_model('./models/trl.model')
-
 bts._name = 'BTS'
 trl._name = 'TRL'
 
+#Configure email sender
+email_sender = '@gmail.com'
+email_password = ''
+email_receiver = '@gmail.com'
+subject = 'Brain MRI scan revision needed'
+
+#Sidebar
 with st.sidebar:
     st.image('./src/pics/samples/logo.png', width=300)
     st.subheader('*A deep learning application for healthcare support*')
@@ -96,7 +104,7 @@ with st.sidebar:
         st.write('[Brain Anatomy in detail](https://www.physio-pedia.com/Brain_Anatomy)')
 
 
-
+#Model radio button selector
 model_load = st.radio(
     ":red[**Please select model to be used for the image prediction**]",
     ('BTS', 'TRL', 'Both'))
@@ -113,8 +121,8 @@ else:
     model1 = bts
     model2 = trl
 
+#Image loader and enhancer
 image= st.file_uploader(':red[Please upload a .jpg file]', type='jpg')
-
 def image_prep(image):
     img = Image.open(image)
     img = Image.fromarray(np.uint8(img))
@@ -122,12 +130,8 @@ def image_prep(image):
     img = ImageEnhance.Contrast(img).enhance(1)
     return img
 
+#Models predicitions
 if image and (model_load != 'Both'):
-    #Configure email sender
-    email_sender = '@gmail.com'
-    email_password = ''
-    email_receiver = '@gmail.com'
-    subject = 'Brain MRI scan revision needed'
     pic_name = image.name
     #Image loader and predictions
     img = image_prep(image)
@@ -208,11 +212,6 @@ if image and (model_load != 'Both'):
                     smtp.sendmail(email_sender, email_receiver, em.as_string())
 
 elif image and model_load == 'Both':
-    #Configure email sender
-    email_sender = '@gmail.com'
-    email_password = ''
-    email_receiver = '@gmail.com'
-    subject = 'Brain MRI scan revision needed'
     pic_name = image.name
     #Image loader and predictions
     img = image_prep(image)
@@ -227,8 +226,7 @@ elif image and model_load == 'Both':
     score2 = max(res2[0])
     lbl2 = tf.nn.softmax(res2[0])
     st.header('{}.\n Confidence level: {:.2f}%. Model used: {}'.format(pred_dict[np.argmax(lbl2)], (100 * score2), model2.name))
-    cut = score1+score2
-    if (cut < 1.998):
+    if ((score1 < 0.9990) and (score2 < 0.9990)):
         st.subheader(':red[Neither of the models achieved a 99.90% confidence level]')
         st.subheader(':red[Email sent to a Brain Specialist for further review]')
         image = img.resize((300,300))
@@ -247,5 +245,5 @@ elif image and model_load == 'Both':
             smtp.login(email_sender, email_password)
             smtp.sendmail(email_sender, email_receiver, em.as_string())
     else:
-        image = img.resize((500,500))
+        image = img.resize((350,350))
         st.image(image)
