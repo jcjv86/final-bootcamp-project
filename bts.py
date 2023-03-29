@@ -36,15 +36,14 @@ with st.sidebar:
     st.subheader('*A deep learning application for healthcare support*')
     st.write('''##### *by Juan Jimenez*''')
     st.write('This program uses 2 different machine learning models to check if on a MRI brain scan picture there is a tumor growth.')
-    st.write('''If the model doesn't arrive to a 99.90% confidence level it will recommend to see a doctor.''')
-    st.write('Future implementations could flag the result and send it automatically to a doctor for further review.')
+    st.write('''If the model doesn't reach a 99.90% confidence level it will email a brain specialist automatically.''')
     st.header(''':red[Program developed for studying purposes, not to be used for any other reason!]''')
 
     st.header(''':red[Please ALWAYS check with a doctor]''')
 
 
     st.header('Additional resources')
-    with st.expander('Tumor types used by this model.'):
+    with st.expander('Tumor types detected by this model'):
 
         tab1, tab2, tab3 = st.tabs(['glioma', 'meningioma', 'pituitary'])
 
@@ -69,6 +68,21 @@ with st.sidebar:
             st.write('In addition to this, any alteration in the gland can lead to a increased or reduced hormone release rate, impacting the normal functioning of the body')
             st.write('More info: [Pituitary tumors at Cancer.org](https://www.cancer.org/cancer/pituitary-tumors/about/what-is-pituitary-tumor.html)')
 
+    with st.expander('Model details'):
+        st.write('Models were trained with a dataset containing pictures of a healthy brain (notumor) and 3 different tumor classes.')
+        st.write('Dataset [source](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset)')
+        st.write('Performance achieved by both models was really good, althought they had slight differences for each tumor type as we can see in the confusion matrices:')
+        st.subheader('BTS model confusion matrix:')
+        st.image('./src/pics/confusion_matrix_bts.png', width=270)
+        st.subheader('TRL model confusion matrix:')
+        st.image('./src/pics/confusion_matrix_trl.png', width=270)
+        st.write('TRL model was better at diagnosing notumor class, with no false negatives. This is ideal in a critical diagnostic such as detecting a tumor.')
+        st.write('''We want to avoid these false negatives at all costs, and although false positives are not ideal (informing the patient they have a tumor and later correcting the diagnostic), it is always better than the opossite (incorrectly informing a patient that they don't have a tumor to later acknowledge they did, when it may be already too late for treatment).''')
+        st.write('''However, since the BTS model was better at detecting other tumor types (like meningioma), it was also convenient to take into account its predictions when the confidence levels didn't indicate certainty.''')
+        st.write('Eventually, when a 99.90% confidence level is not reached, the program will email a brain specialist for direct review. This email client can be fully configured in the main app, future program versions will separate the program into blocks for an easier configuration.')
+        st.write('Even if the model performance detecting tumors is optimal, sometimes it may confuse the tumor types. This happens especially when the perspective of the MRI scan is such that it is hard for it to understand where the tumor is located (if in the brain surface like a meningioma or depper inside like a pituitary tumor).')
+        st.write('Also, lack or excessive contrast and/or brightness, picture resolution, etc... may affect performance. This is the main reason for setting a confidence critical level as high as a 99.90%.')
+
     with st.expander('Cancer Associations'):
         st.write('[Asociación Española Contra el Cáncer](https://www.contraelcancer.es/es)')
         st.write('[European Association for Cancer Research](https://www.eacr.org/)')
@@ -83,20 +97,21 @@ with st.sidebar:
 
 
 
-
-
-
 model_load = st.radio(
     ":red[**Please select model to be used for the image prediction**]",
-    ('BTS', 'TRL'))
+    ('BTS', 'TRL', 'Both'))
 
 
 if model_load == 'BTS':
     st.write(':red[You selected BTS model.]')
     model = bts
-else:
+elif model_load == 'TRL':
     st.write(':red[You selected TRL model.]')
     model = trl
+else:
+    st.write(':red[You selected both models. Program will run a double diagnostic]')
+    model1 = bts
+    model2 = trl
 
 image= st.file_uploader(':red[Please upload a .jpg file]', type='jpg')
 
@@ -107,7 +122,7 @@ def image_prep(image):
     img = ImageEnhance.Contrast(img).enhance(1)
     return img
 
-if image:
+if image and (model_load != 'Both'):
     #Configure email sender
     email_sender = '@gmail.com'
     email_password = ''
@@ -148,7 +163,7 @@ if image:
                 st.image(image)
                 greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
                 conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}%'.format((100 * score), (100 * score2)))
-                goodbye = '\n\nKind regards,\nBTS crew'
+                goodbye = '\n\nKind regards,\nBTS'
                 body = greet+pic_name+conf_lvl+goodbye
                 em = EmailMessage()
                 em['From'] = email_sender
@@ -180,7 +195,7 @@ if image:
                 st.image(image)
                 greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
                 conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}%'.format((100 * score), (100 * score2)))
-                goodbye = '\n\nKind regards,\nBTS crew'
+                goodbye = '\n\nKind regards,\nBTS'
                 body = greet+pic_name+conf_lvl+goodbye
                 em = EmailMessage()
                 em['From'] = email_sender
@@ -191,3 +206,46 @@ if image:
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
                     smtp.login(email_sender, email_password)
                     smtp.sendmail(email_sender, email_receiver, em.as_string())
+
+elif image and model_load == 'Both':
+    #Configure email sender
+    email_sender = '@gmail.com'
+    email_password = ''
+    email_receiver = '@gmail.com'
+    subject = 'Brain MRI scan revision needed'
+    pic_name = image.name
+    #Image loader and predictions
+    img = image_prep(image)
+    x = np.array(img.resize((128,128)))
+    x = x.reshape(1,128,128,3)
+    x = np.array(x)/255.0
+    res1 = model1.predict_on_batch(x)
+    score1 = max(res1[0])
+    lbl1 = tf.nn.softmax(res1[0])
+    st.header('{}.\n Confidence level: {:.2f}%. Model used: {}'.format(pred_dict[np.argmax(lbl1)], (100 * score1), model1.name))
+    res2 = model2.predict_on_batch(x)
+    score2 = max(res2[0])
+    lbl2 = tf.nn.softmax(res2[0])
+    st.header('{}.\n Confidence level: {:.2f}%. Model used: {}'.format(pred_dict[np.argmax(lbl2)], (100 * score2), model2.name))
+    cut = score1+score2
+    if (cut < 1.998):
+        st.subheader(':red[Neither of the models achieved a 99.90% confidence level]')
+        st.subheader(':red[Email sent to a Brain Specialist for further review]')
+        image = img.resize((300,300))
+        st.image(image)
+        greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
+        conf_lvl = ('\nConfidence levels: {:.2f}% and {:.3f}%'.format((100 * score1), (100 * score2)))
+        goodbye = '\n\nKind regards,\nBTS'
+        body = greet+pic_name+conf_lvl+goodbye
+        em = EmailMessage()
+        em['From'] = email_sender
+        em['To'] = email_receiver
+        em['Subject'] = subject
+        em.set_content(body)
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+            smtp.login(email_sender, email_password)
+            smtp.sendmail(email_sender, email_receiver, em.as_string())
+    else:
+        image = img.resize((500,500))
+        st.image(image)
