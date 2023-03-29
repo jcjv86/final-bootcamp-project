@@ -8,6 +8,8 @@ A tumor growth in an enclosed environment such as the cranium can be very proble
 
 The following project takes care of identifying if in a given brain MRI scan picture there is a tumor growth using 2 Deep Learning CNN models. If a model doesn't achieve a 99.90% confidence, runs a secondary diagnostic with the other model, and if this doesn't arrive to a 99.90% confidence either, an specialist is contacted automatically via email.
 
+User can also select both models at the same time, so the program will run a double diagnostic even if the first model achieves a 99.90% confidence level. It will also email a specialist if neither of them reaches that threshold.
+
 
 The models were trained using MRI brain scans of the following types of central nervous system tumors:
 
@@ -49,8 +51,13 @@ python setup.py
 5- Run app: <br>
 streamlit run bts.py
 
-This app takes a jpg file of a brain MRI scan and checks if there is a tumor of the above mentioned types.
+## Instructions for the email setup:
 
+- Line 36: sender (email account that will send the notification via SMTP).
+- Line 37: password (for sender email, recommended to set an app password).
+- Line 38: receiver (email account that will receive the notification). <br>
+
+If you use a different server than gmail you would have to configure the smtp servers in lines 178, 210 and 244.
 
 ## App in action
 
@@ -72,12 +79,9 @@ This app takes a jpg file of a brain MRI scan and checks if there is a tumor of 
 5.2- Email notification sent by BTS program
 ![Alt text](src/pics/samples/app_mail.png?raw=true "Title")
 
-
-## Instructions for the email setup:
-
-Look for line 111, from there you can set the email account that will send the notification via smtp (currently configured for gmail), the password (recommended to set an app password) and the email account that will receive the notification. <br>
-
-If you use a different server than gmail you would have to configure the smtp servers in lines 159 and 191.
+Extra- Both models can run now even if one reaches 99.90% confidence level, and they will also email specialist if neither reaches it.
+![Alt text](src/pics/samples/app6.png?raw=true "Title")
+![Alt text](src/pics/samples/app7.png?raw=true "Title")
 
 ## Program developed for studying purposes, not to be used for any other reason!
 
