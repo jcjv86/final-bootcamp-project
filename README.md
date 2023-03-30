@@ -48,18 +48,24 @@ source ./venv/bin/activate
 4- Run setup.py to install required libraries, configure venv user and download and unpack the dataset and models (around 1GB download in total): <br>
 python setup.py
 
-5- Run app: <br>
+5- Move into app folder:
+cd app
+
+6- Run app: <br>
 streamlit run bts.py
 
 ## Instructions for the email setup:
 
-- Line 36: sender (email account that will send the notification via SMTP).
-- Line 37: password (for sender email, recommended to set an app password).
-- Line 38: receiver (email account that will receive the notification). <br>
+Open and edit 'email_credentials.py' script on the app folder. <br>
 
-If you use a different server than gmail you would have to configure the smtp servers in lines 178, 210 and 244.
+- Set the email_sender (email from where the notification is sent)
+- Set the email_password (recommended to configure an app password)
+- Set the email_receiver (email that will receive the notification)
 
-## App in action
+If you use a different server than gmail you would have to configure the smtp servers in the app script.<br>
+--In development. Improvements to be included soon--
+
+## App in action -work in progress, new theme set so this will be updated soon-
 
 1- BTS model 100% confidence
 ![Alt text](src/pics/samples/app1.png?raw=true "Title")
@@ -82,9 +88,6 @@ If you use a different server than gmail you would have to configure the smtp se
 Extra- Both models can run now even if one reaches 99.90% confidence level, and they will also email specialist if neither reaches it.
 ![Alt text](src/pics/samples/app6.png?raw=true "Title")
 ![Alt text](src/pics/samples/app7.png?raw=true "Title")
-
-## Program developed for studying purposes, not to be used for any other reason!
-
 
 ## Please **ALWAYS** check with a doctor.
 
