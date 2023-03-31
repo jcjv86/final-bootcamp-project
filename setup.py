@@ -9,8 +9,6 @@ subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip
 
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
 
-subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements-dev.txt'])
-
 #Jupyter lab added here as I couldn't include it on the requirements file due to issues with jupyter.
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'jupyterlab'])
 print('Jupyter Lab installed')
