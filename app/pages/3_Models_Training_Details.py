@@ -1,0 +1,15 @@
+import streamlit as st
+st.set_page_config(page_title='Brain tumor types - Brain Tumor Scanner', page_icon=':brain:', layout="wide", initial_sidebar_state="auto", menu_items=None)
+
+st.write('Models were trained with a dataset containing pictures of a healthy brain (notumor) and 3 different tumor classes.')
+st.write('Performance achieved by both models was really good, althought they had slight differences for each tumor type as we can see in the confusion matrices:')
+st.subheader('BTS model confusion matrix:')
+st.image('../src/pics/confusion_matrix_bts.png', width=270)
+st.subheader('TRL model confusion matrix:')
+st.image('../src/pics/confusion_matrix_trl.png', width=270)
+st.write('TRL model was better at diagnosing notumor class, with no false negatives. This is ideal in a critical diagnostic such as detecting a tumor.')
+st.write('''We want to avoid these false negatives at all costs, and although false positives are not ideal (informing the patient they have a tumor and later correcting the diagnostic), it is always better than the opossite (incorrectly informing a patient that they don't have a tumor to later acknowledge they did, when it may be already too late for treatment).''')
+st.write('''However, since the BTS model was better at detecting other tumor types (like meningioma), it was also convenient to take into account its predictions when the confidence levels didn't indicate certainty.''')
+st.write('Eventually, when a 99.90% confidence level is not reached, the program will email a brain specialist for direct review. This email client can be fully configured in the main app, future program versions will separate the program into blocks for an easier configuration.')
+st.write('Even if the model performance detecting tumors is optimal, sometimes it may confuse the tumor types. This happens especially when the perspective of the MRI scan is such that it is hard for it to understand where the tumor is located (if in the brain surface like a meningioma or depper inside like a pituitary tumor).')
+st.write('Also, lack or excessive contrast and/or brightness, picture resolution, etc... may affect performance. This is the main reason for setting a confidence critical level as high as a 99.90%.')

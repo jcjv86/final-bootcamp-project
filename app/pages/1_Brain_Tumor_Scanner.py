@@ -20,9 +20,18 @@ from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.utils import plot_model
 import smtplib
 import ssl
+sys.path.append('./config')
 import email_config as email
 from email.message import EmailMessage
-st.set_page_config(page_title='Brain Tumor Scanner', page_icon=':brain:', layout="wide", initial_sidebar_state="auto", menu_items=None)
+
+#Page config
+st.set_page_config(
+    page_title='Brain Tumor Scanner',
+    page_icon=':brain:',
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items=None)
+
 #Load prediction dictionary (class labels)
 with open('../src/lib/pred_dict.pickle', 'rb') as handle:
     pred_dict = pickle.load(handle)
@@ -35,88 +44,28 @@ trl._name = 'TRL'
 
 #Sidebar
 with st.sidebar:
-    st.image('../src/pics/samples/logo.png', width=300)
-    st.subheader('*A deep learning application for healthcare support*')
-    st.write('''##### *by Juan Jimenez*''')
-    st.write('This program uses 2 different machine learning models to check if on a MRI brain scan picture there is a tumor growth.')
-    st.write('''If none reaches a 99.90% confidence level or they identify different tumor types, it will email a brain specialist automatically.''')
-    notification = st.checkbox('''Do you want to activate email notifications?''', value = True)
+    #Activate email notifications
+    notification = st.checkbox('Activate email notifications', value = True)
+    st.subheader('')
+    #Select model to load
+    model_load = st.radio('**Select model**',('BTS', 'TRL', 'Both'))
+    if model_load == 'BTS':
+        st.write(':purple[You selected BTS model.]')
+        model = bts
+    elif model_load == 'TRL':
+        st.write(':red[You selected TRL model.]')
+        model = trl
+    else:
+        st.write(':red[You selected both models. Program will run a double diagnostic]')
+        model1 = bts
+        model2 = trl
     st.header(''':red[Please ALWAYS check with a doctor]''')
-
-    st.header('Additional resources')
-    with st.expander('Tumor types detected by this model'):
-
-        tab1, tab2, tab3 = st.tabs(['glioma', 'meningioma', 'pituitary'])
-
-        with tab1:
-            st.image('../src/pics/samples/glioma.jpg', width=200)
-            st.write('A Glioma is a common type of tumor originating in the brain.')
-            st.write('About 33 percent of all brain tumors and 80 percent of all malignant tumors are gliomas, which originate in the glial cells that surround and support neurons in the brain, including astrocytes,         oligodendrocytes and ependymal cells.')
-            st.write('Gliomas are called intra-axial brain tumors because they grow within the substance of the brain and often mix with normal brain tissue.')
-            st.write('Due to the location of these tumors (and since different structures can be involved), the treatment is complicated and the prognosis is not usually favorable, even for the Grade I and Grade II tumors.')
-            st.write('More info: [Glioma at Cancer.gov](https://www.cancer.gov/rare-brain-spine-tumor/tumors/gliomatosis-cerebri)')
-        with tab2:
-            st.image('../src/pics/samples/meningioma.jpg', width=200)
-            st.write('A Meningioma is the most common type of primary brain tumor, accounting for approximately 30 percent of all brain tumors.')
-            st.write('Overall, meningiomas have the best prognosis, since they originate in the meninges, which are close to the cranium, so surgery is less risky')
-            st.write('The relative 5-year survival rate for atypical and anaplastic meningioma is 63.8%')
-            st.write('More info: [Meningioma at Cancer.gov](https://www.cancer.gov/rare-brain-spine-tumor/tumors/meningioma)')
-        with tab3:
-            st.image('../src/pics/samples/pituitary.jpg', width=200)
-            st.write('Pituitary tumors originate in the pituitary gland.')
-            st.write('This gland is of extreme importance to the human body, since it makes hormornes that regulate the release of other hormones produced by different endocrine system glands.')
-            st.write('Since the space where this gland is located is very tight, any abnormal growth can, for example, press on the optic nerves which pass above it, causing blindness.')
-            st.write('In addition to this, any alteration in the gland can lead to a increased or reduced hormone release rate, impacting the normal functioning of the body')
-            st.write('More info: [Pituitary tumors at Cancer.org](https://www.cancer.org/cancer/pituitary-tumors/about/what-is-pituitary-tumor.html)')
-
-    with st.expander('Model details'):
-        st.write('Models were trained with a dataset containing pictures of a healthy brain (notumor) and 3 different tumor classes.')
-        st.write('Dataset [source](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset)')
-        st.write('Performance achieved by both models was really good, althought they had slight differences for each tumor type as we can see in the confusion matrices:')
-        st.subheader('BTS model confusion matrix:')
-        st.image('../src/pics/confusion_matrix_bts.png', width=270)
-        st.subheader('TRL model confusion matrix:')
-        st.image('../src/pics/confusion_matrix_trl.png', width=270)
-        st.write('TRL model was better at diagnosing notumor class, with no false negatives. This is ideal in a critical diagnostic such as detecting a tumor.')
-        st.write('''We want to avoid these false negatives at all costs, and although false positives are not ideal (informing the patient they have a tumor and later correcting the diagnostic), it is always better than the opossite (incorrectly informing a patient that they don't have a tumor to later acknowledge they did, when it may be already too late for treatment).''')
-        st.write('''However, since the BTS model was better at detecting other tumor types (like meningioma), it was also convenient to take into account its predictions when the confidence levels didn't indicate certainty.''')
-        st.write('Eventually, when a 99.90% confidence level is not reached, the program will email a brain specialist for direct review. This email client can be fully configured in the main app, future program versions will separate the program into blocks for an easier configuration.')
-        st.write('Even if the model performance detecting tumors is optimal, sometimes it may confuse the tumor types. This happens especially when the perspective of the MRI scan is such that it is hard for it to understand where the tumor is located (if in the brain surface like a meningioma or depper inside like a pituitary tumor).')
-        st.write('Also, lack or excessive contrast and/or brightness, picture resolution, etc... may affect performance. This is the main reason for setting a confidence critical level as high as a 99.90%.')
-
-    with st.expander('Cancer Associations'):
-        st.write('[Asociación Española Contra el Cáncer](https://www.contraelcancer.es/es)')
-        st.write('[European Association for Cancer Research](https://www.eacr.org/)')
-        st.write('[American Cancer Society](https://cancer.org)')
-        st.write('[American Association for Cancer Research](https://www.aacr.org/)')
-        st.write('')
-
-    with st.expander('Learning resources'):
-        st.write('[Keras](https://keras.io/)')
-        st.write('[Google ML Education](https://developers.google.com/machine-learning)')
-        st.write('[Brain Anatomy in detail](https://www.physio-pedia.com/Brain_Anatomy)')
 #Sidebar ends
 
-#Program
-#Model selector - radio button
-model_load = st.radio(
-    ':red[**Please select model to be used for the image prediction**]',
-    ('BTS', 'TRL', 'Both'))
-
-
-if model_load == 'BTS':
-    st.write(':red[You selected BTS model.]')
-    model = bts
-elif model_load == 'TRL':
-    st.write(':red[You selected TRL model.]')
-    model = trl
-else:
-    st.write(':red[You selected both models. Program will run a double diagnostic]')
-    model1 = bts
-    model2 = trl
+#   ///// Program /////
 
 #Image loader and enhancer
-image= st.file_uploader(':red[Please upload a .jpg file]', type='jpg')
+image= st.file_uploader(':red[Please upload a .jpg file to start scanning]', type='jpg')
 def image_prep(image):
     img = Image.open(image)
     img = Image.fromarray(np.uint8(img))

@@ -1,0 +1,16 @@
+import streamlit as st
+st.set_page_config(page_title='Cancer Associations - Brain Tumor Scanner', page_icon=':brain:', layout="centered", initial_sidebar_state="auto", menu_items=None)
+st.title('Donate!')
+st.title('')
+st.subheader('Every donation can save lives.')
+st.title('')
+st.title('')
+
+st.write('[Asociación Española Contra el Cáncer](https://www.contraelcancer.es/es)')
+st.write('')
+st.write('[European Association for Cancer Research](https://www.eacr.org/)')
+st.write('')
+st.write('[American Cancer Society](https://cancer.org)')
+st.write('')
+st.write('[American Association for Cancer Research](https://www.aacr.org/)')
+st.write('')
