@@ -5,4 +5,4 @@ __pycache__/
 data/
 .~lock.slides.odp#
 models/
-app/email_config.py
+email_config.py
