@@ -25,7 +25,7 @@ Alternatively, if you just want to use the app with the already trained models, 
 
 ### Updates:
 - Program is now a multipage app.
-- Web browser tab now shows the active page and a brain icon. Default theme set in app/.streamlit/config.toml
+- Web browser tab now shows the active page and a brain icon. Default theme set in app/.streamlit/config.toml<br>
 ![Alt text](src/pics/samples/tab.png?raw=true "Title")
 - Additional resources in different pages allow a clearer read.
 - BTS model selection and enable email notifications actioned in sidebar.
