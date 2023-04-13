@@ -8,21 +8,15 @@ import pickle
 import random
 from PIL import Image, ImageEnhance
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.layers import *
-from tensorflow.keras.losses import *
-from tensorflow.keras.models import *
-from tensorflow.keras.metrics import *
-from tensorflow.keras.optimizers import *
-from tensorflow.keras.applications import *
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from tensorflow.keras.preprocessing.image import load_img
-from tensorflow.keras.utils import plot_model
 import smtplib
 import ssl
-sys.path.append('./config')
-import email_config as email
 from email.message import EmailMessage
+sys.path.append('./config')
+from email_config import email_sender as email_sender
+from email_config import email_password as email_password
+from email_config import email_receiver as email_receiver
+from email_config import smtp_address as smtp_address
+from email_config import smtp_port as smtp_port
 
 #Page config
 st.set_page_config(
@@ -111,9 +105,6 @@ if image and (model_load != 'Both'):
                 image = img.resize((300,300))
                 st.image(image)
                 if notification:
-                    email_sender = email.email_sender
-                    email_password = email.email_password
-                    email_receiver = email.email_receiver
                     subject = 'Brain MRI scan revision needed - different tumor types identified'
                     greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
                     conf_lvl = ('\n{}, confidence level: {:.2f}% (BTS model) \n{}, confidence level: {:.3f}% (TRL model)'.format(tumor, (100 * score), tumor2, (100 * score2)))
@@ -125,7 +116,7 @@ if image and (model_load != 'Both'):
                     em['Subject'] = subject
                     em.set_content(body)
                     context = ssl.create_default_context()
-                    with smtplib.SMTP_SSL(email.smtp_address, email.smtp_port, context=context) as smtp:
+                    with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as smtp:
                         smtp.login(email_sender, email_password)
                         smtp.sendmail(email_sender, email_receiver, em.as_string())
             else:
@@ -137,9 +128,6 @@ if image and (model_load != 'Both'):
                 image = img.resize((300,300))
                 st.image(image)
                 if notification:
-                    email_sender = email.email_sender
-                    email_password = email.email_password
-                    email_receiver = email.email_receiver
                     subject = 'Brain MRI scan revision needed'
                     greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
                     conf_lvl = ('\n{}, confidence levels: {:.2f}% (BTS model) and {:.3f}% (TRL model)'.format(tumor, (100 * score), (100 * score2)))
@@ -151,7 +139,7 @@ if image and (model_load != 'Both'):
                     em['Subject'] = subject
                     em.set_content(body)
                     context = ssl.create_default_context()
-                    with smtplib.SMTP_SSL(email.smtp_address, email.smtp_port, context=context) as smtp:
+                    with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as smtp:
                         smtp.login(email_sender, email_password)
                         smtp.sendmail(email_sender, email_receiver, em.as_string())
         if model == trl:
@@ -175,9 +163,6 @@ if image and (model_load != 'Both'):
                 image = img.resize((300,300))
                 st.image(image)
                 if notification:
-                    email_sender = email.email_sender
-                    email_password = email.email_password
-                    email_receiver = email.email_receiver
                     subject = 'Brain MRI scan revision needed - different tumor types identified'
                     greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
                     conf_lvl = ('\n{}, confidence level: {:.2f}% (BTS model)\n{}, confidence level: {:.3f}% (TRL model)'.format(tumor, (100 * score), tumor2, (100 * score2)))
@@ -189,7 +174,7 @@ if image and (model_load != 'Both'):
                     em['Subject'] = subject
                     em.set_content(body)
                     context = ssl.create_default_context()
-                    with smtplib.SMTP_SSL(email.smtp_address, email.smtp_port, context=context) as smtp:
+                    with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as smtp:
                         smtp.login(email_sender, email_password)
                         smtp.sendmail(email_sender, email_receiver, em.as_string())
             else:
@@ -201,9 +186,6 @@ if image and (model_load != 'Both'):
                 image = img.resize((300,300))
                 st.image(image)
                 if notification:
-                    email_sender = email.email_sender
-                    email_password = email.email_password
-                    email_receiver = email.email_receiver
                     subject = 'Brain MRI scan revision needed'
                     greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
                     conf_lvl = ('\n{}, confidence level: {:.2f}% (BTS model), confidence level: {:.3f}% (TRL model)'.format(tumor, (100 * score), (100 * score2)))
@@ -215,7 +197,7 @@ if image and (model_load != 'Both'):
                     em['Subject'] = subject
                     em.set_content(body)
                     context = ssl.create_default_context()
-                    with smtplib.SMTP_SSL(email.smtp_address, email.smtp_port, context=context) as smtp:
+                    with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as smtp:
                         smtp.login(email_sender, email_password)
                         smtp.sendmail(email_sender, email_receiver, em.as_string())
 
@@ -245,9 +227,6 @@ elif image and model_load == 'Both':
         image = img.resize((300,300))
         st.image(image)
         if notification:
-            email_sender = email.email_sender
-            email_password = email.email_password
-            email_receiver = email.email_receiver
             subject = 'Brain MRI scan revision needed'
             greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
             conf_lvl = ('\n{}, confidence level: {:.2f}% (BTS model)\n{}, confidence level: {:.3f}% (TRL model)'.format(tumor, (100 * score1), tumor2, (100 * score2)))
@@ -259,7 +238,7 @@ elif image and model_load == 'Both':
             em['Subject'] = subject
             em.set_content(body)
             context = ssl.create_default_context()
-            with smtplib.SMTP_SSL(email.smtp_address, email.smtp_port, context=context) as smtp:
+            with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as smtp:
                 smtp.login(email_sender, email_password)
                 smtp.sendmail(email_sender, email_receiver, em.as_string())
     elif tumor != tumor2:
@@ -269,9 +248,6 @@ elif image and model_load == 'Both':
                 image = img.resize((300,300))
                 st.image(image)
                 if notification:
-                    email_sender = email.email_sender
-                    email_password = email.email_password
-                    email_receiver = email.email_receiver
                     subject = 'Brain MRI scan revision needed - different tumor types identified'
                     greet = 'Dear Brain Specialist,\n\nA revision is needed for MRI scan '
                     conf_lvl = ('\n{}, confidence level: {:.2f}% (BTS model)\n{}, confidence level: {:.3f}% (TRL model)'.format(tumor, (100 * score1), tumor2, (100 * score2)))
@@ -283,7 +259,7 @@ elif image and model_load == 'Both':
                     em['Subject'] = subject
                     em.set_content(body)
                     context = ssl.create_default_context()
-                    with smtplib.SMTP_SSL(email.smtp_address, email.smtp_port, context=context) as smtp:
+                    with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as smtp:
                         smtp.login(email_sender, email_password)
                         smtp.sendmail(email_sender, email_receiver, em.as_string())
     else:
